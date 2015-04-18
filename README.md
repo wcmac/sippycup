@@ -9,7 +9,7 @@
 <h1 style="line-height: 125%">SippyCup</h1>
 <p>
   <a href="http://nlp.stanford.edu/~wcmac/">Bill MacCartney</a><br/>
-  Spring2015
+  Spring 2015
 </p>
 </td>
 
@@ -41,7 +41,7 @@ published as a sequence of four [IPython Notebooks][]:
 
 SippyCup remains a work in progress, and you will find a number of TODOs throughout this notebook and the accompanying Python codebase.  You will likely also find errors!  You can help to contribute to SippyCup by sending corrections to [the author](mailto:wcmac@cs.stanford.edu) or by sending a pull request to the SippyCup [GitHub repository][].
 
-  [codelab]: http://nbviewer.ipython.org/url/github.com/wcmac/sippycup/sippycup-unit-0.ipynb
+  [codelab]: http://nbviewer.ipython.org/github/wcmac/sippycup/blob/master/sippycup-unit-0.ipynb
   [Unit 0]: http://nbviewer.ipython.org/github/wcmac/sippycup/blob/master/sippycup-unit-0.ipynb
   [Unit 1]: http://nbviewer.ipython.org/github/wcmac/sippycup/blob/master/sippycup-unit-1.ipynb
   [Unit 2]: http://nbviewer.ipython.org/github/wcmac/sippycup/blob/master/sippycup-unit-2.ipynb

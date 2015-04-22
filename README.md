@@ -35,9 +35,9 @@ SippyCup was inspired by, and partly adapted from, the [demonstration code][] pu
 In addition to the Python source code, SippyCup includes a [codelab][] on semantic parsing,
 published as a sequence of four [IPython Notebooks][]:
 - [Unit 0][]: Introduction to semantic parsing
-- [Unit 1][]: Natural language arithmetic (COMING SOON)
-- [Unit 2][]: Travel queries (COMING SOON)
-- [Unit 3][]: Geography queries (COMING SOON)
+- [Unit 1][]: Natural language arithmetic
+- [Unit 2][]: Travel queries
+- [Unit 3][]: Geography queries
 
 SippyCup remains a work in progress, and you will find a number of TODOs throughout this notebook and the accompanying Python codebase.  You will likely also find errors!  You can help to contribute to SippyCup by sending corrections to [the author](mailto:wcmac@cs.stanford.edu) or by sending a pull request to the SippyCup [GitHub repository][].
 

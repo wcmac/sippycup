@@ -52,13 +52,14 @@ __email__ = "See the author's website"
 from annotator import TokenAnnotator
 from domain import Domain
 from example import Example
-from experiment import evaluate_for_domain, train_test_for_domain, interact, sample_wins_and_losses
+from experiment import evaluate_for_domain, train_test_for_domain, interact, sample_wins_and_losses, evaluate_dev_examples_for_domain
 from geonames import GeoNamesAnnotator
 from graph_kb import GraphKB
 from metrics import semantics_match_metrics, SemanticsOracleAccuracyMetric, HasParseMetric
 from parsing import Grammar, Rule, parse_input
 from scoring import rule_features
 from travel_examples import travel_train_examples, travel_test_examples
+from travel_examples_dev import travel_dev_examples
 
 
 # semantics helper functions ===================================================
@@ -85,6 +86,9 @@ class TravelDomain(Domain):
 
     def train_examples(self):
         return travel_train_examples
+
+    def dev_examples(self):
+        return travel_dev_examples
 
     def test_examples(self):
         return travel_test_examples
@@ -388,6 +392,7 @@ def overtriggering_experiment():
 if __name__ == '__main__':
     domain = TravelDomain()
     evaluate_for_domain(domain, print_examples=False)
+    # evaluate_dev_examples_for_domain(domain)
     # train_test_for_domain(domain, seed=1)
     # overtriggering_experiment()
     # interact(domain, 'directions from boston to austin by bike')

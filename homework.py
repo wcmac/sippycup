@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # [CS224u](https://web.stanford.edu/class/cs224u/) Homework 3
+# # [CS224U](https://web.stanford.edu/class/cs224u/) Homework 5
 # 
 # All seven problems are required. This work is due by the start of
-# class on May 11.
+# class on May 16.
 # 
 # Be sure to put this code, or run this notebook, inside [the SippyCup
 # codebase](https://github.com/wcmac/sippycup).

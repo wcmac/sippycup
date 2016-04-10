@@ -30,11 +30,11 @@ def print_sample_outcomes(model=None,
             candidates.append(example)
     k = min(k, len(candidates))
     samples = random.sample(candidates, k)
-    print '%d of %d %s on %s:\n' % (k, len(candidates), name, metric.name())
+    print('%d of %d %s on %s:\n' % (k, len(candidates), name, metric.name()))
     inputs = [example.input for example in samples]
     for input in sorted(inputs):
-        print ' ', input
-    print
+        print(' ', input)
+    print()
     return samples
 
 # TODO: comment
@@ -67,16 +67,16 @@ def print_parses(example,
                  metrics=[NumParsesMetric()],
                  max_parses=10000,
                  show_syntax=False):
-        print '%-34s %s' % ('input', example.input)
+        print('%-34s %s' % ('input', example.input))
         if example.semantics != None:
-            print '%-34s %s' % ('target semantics', str(example.semantics))
+            print('%-34s %s' % ('target semantics', str(example.semantics)))
         if example.denotation != None:
-            print '%-34s %s' % ('target denotation', str(example.denotation))
-        print
+            print('%-34s %s' % ('target denotation', str(example.denotation)))
+        print()
         for metric in metrics:
             metric_value = metric.evaluate(example, parses)
-            print '%-34s %.3g' % (metric.name(), metric_value)
-        print
+            print('%-34s %.3g' % (metric.name(), metric_value))
+        print()
         for idx, parse in enumerate(parses[:max_parses]):
             def outcome_marker(target, prediction):
                 return ('+' if prediction == target else '-') if target != None else ' '
@@ -94,12 +94,12 @@ def print_parses(example,
                 lines.append('%-15s %s   %s' % ('denotation', denotation_outcome, parse.denotation))
             for l, line in enumerate(lines):
                 if l == 0:
-                    print '%-3s %8.3f   %s' % (idx, parse.score, line)
+                    print('%-3s %8.3f   %s' % (idx, parse.score, line))
                 else:
-                    print '%-3s %8s   %s' % ('', '', line)
+                    print('%-3s %8s   %s' % ('', '', line))
         if len(parses) > max_parses:
-            print '(additional parses truncated)'
-        print '\n' + '-' * 80
+            print('(additional parses truncated)')
+        print('\n' + '-' * 80)
 
 # TODO: comment
 def evaluate_model(model=None,
@@ -107,10 +107,10 @@ def evaluate_model(model=None,
                    examples_label=None,
                    metrics=standard_metrics(),
                    print_examples=True):
-    print '=' * 80
-    print 'Evaluating on %d %sexamples\n' % (
-        len(examples), examples_label + ' ' if examples_label else '')
-    print '-' * 80
+    print('=' * 80)
+    print('Evaluating on %d %sexamples\n' % (
+        len(examples), examples_label + ' ' if examples_label else ''))
+    print('-' * 80)
     metric_values = defaultdict(int)
     for example in examples:
         parses = model.parse_input(example.input)
@@ -119,11 +119,11 @@ def evaluate_model(model=None,
             metric_values[metric.name()] += metric_value
         if print_examples:
             print_parses(example, parses, metrics=metrics)
-    print 'Over %d examples:' % len(examples)
-    print
+    print('Over %d examples:' % len(examples))
+    print()
     for metric in metrics:
-        print '%-34s %.3f' % (metric.name(), 1.0 * metric_values[metric.name()] / len(examples))
-    print
+        print('%-34s %.3f' % (metric.name(), 1.0 * metric_values[metric.name()] / len(examples)))
+    print()
 
 # TODO: comment
 def evaluate_grammar(grammar=None,
@@ -138,19 +138,19 @@ def evaluate_grammar(grammar=None,
                    print_examples=print_examples)
 
 def test_executor(domain):
-    print '=' * 80
-    print 'Test Executor\n'
+    print('=' * 80)
+    print('Test Executor\n')
     for example in domain.examples():
-        print '%-24s %s' % ('semantics', example.semantics)
-        print '%-24s %s' % ('target denotation', example.denotation)
+        print('%-24s %s' % ('semantics', example.semantics))
+        print('%-24s %s' % ('target denotation', example.denotation))
         actual_denotation = domain.execute(example.semantics)
         match = (actual_denotation == example.denotation)
-        print '%-24s %s' % ('actual denotation', '[match]' if match else actual_denotation)
-        print
+        print('%-24s %s' % ('actual denotation', '[match]' if match else actual_denotation))
+        print()
 
 def evaluate_for_domain(domain, print_examples=True):
-    print '#' * 80
-    print 'Standard evaluation for domain: %s\n' % domain.__class__.__name__
+    print('#' * 80)
+    print('Standard evaluation for domain: %s\n' % domain.__class__.__name__)
     # grammar = domain.grammar()
     # print_grammar(grammar)
     # print
@@ -182,7 +182,7 @@ def train_test(model=None,
                print_examples=False):
     # print_grammar(model.grammar)
     # print
-    print '%d training examples, %d test examples' % (len(train_examples), len(test_examples))
+    print('%d training examples, %d test examples' % (len(train_examples), len(test_examples)))
 
     # 'Before' test
     model.weights = defaultdict(float)  # no weights
@@ -213,8 +213,8 @@ def train_test(model=None,
                    print_examples=print_examples)
 
 def train_test_for_domain(domain, seed=None, print_examples=False):
-    print '#' * 80
-    print 'Train/test experiment for domain: %s\n' % domain.__class__.__name__
+    print('#' * 80)
+    print('Train/test experiment for domain: %s\n' % domain.__class__.__name__)
     train_test(model=domain.model(),
                train_examples=domain.train_examples(),
                test_examples=domain.test_examples(),
@@ -241,7 +241,7 @@ def cartesian_product_of_lexical_rules(rules, restrict_by_lhs=True):
         lhs = rule.lhs if restrict_by_lhs else 'dummy'
         lexical_rules_by_lhs[lhs].append(rule)
     # In each partition, iterate through Cartesian product of lexical rules.
-    for lhs, rules in lexical_rules_by_lhs.items():
+    for lhs, rules in list(lexical_rules_by_lhs.items()):
         sems = set([rule.sem for rule in rules])
         for rule, sem in product(rules, sems):
             expanded_rules.append(Rule(rule.lhs, rule.rhs, sem))
@@ -249,8 +249,8 @@ def cartesian_product_of_lexical_rules(rules, restrict_by_lhs=True):
 
 def learn_lexical_semantics(domain, seed=None):
     from parsing import Grammar
-    print '#' * 80
-    print 'Learn lexical semantics experiment for domain: %s\n' % domain.__class__.__name__
+    print('#' * 80)
+    print('Learn lexical semantics experiment for domain: %s\n' % domain.__class__.__name__)
     original_grammar = domain.grammar()
     expanded_rules = cartesian_product_of_lexical_rules(domain.rules())
     grammar = Grammar(rules=expanded_rules,
@@ -276,19 +276,19 @@ def interact(domain, example_input=None, T=10):
                        training_metric=domain.training_metric(),
                        T=T)
 
-    print '\nHello! Enter a query%s:' % (', such as "%s"' % example_input if example_input else '')
+    print('\nHello! Enter a query%s:' % (', such as "%s"' % example_input if example_input else ''))
     while True:
         try:
-            input = raw_input('>>> ')
+            input = input('>>> ')
         except EOFError:
-            print '\nBye!'
+            print('\nBye!')
             return
         example = Example(input=input)
         parses = model.parse_input(input)
         if parses:
             print_parses(example, parses)
         else:
-            print 'No parse!'
+            print('No parse!')
 
 def generate(rules, start_symbol='$ROOT', n=100, min_tokens=3, max_tokens=10):
     rules_by_lhs = defaultdict(list)
@@ -307,13 +307,13 @@ def generate(rules, start_symbol='$ROOT', n=100, min_tokens=3, max_tokens=10):
     inputs = set()
     while len(inputs) < n:
         input = sample_phrase(start_symbol)
-        print input
+        print(input)
         num_tokens = len(input.split())
         if num_tokens >= min_tokens and num_tokens <= max_tokens:
             inputs.add(input)
-    print '-' * 80
+    print('-' * 80)
     for input in inputs:
-        print input
+        print(input)
 
 def find_best_rules(domain):
     model = domain.model()
@@ -326,9 +326,9 @@ def find_best_rules(domain):
         if good_parses:
             best_parse = good_parses[0]
             features = rule_features(best_parse)
-            for rule, count in features.items():
+            for rule, count in list(features.items()):
                 rule_counts[rule] = rule_counts[rule] + count
-    counts = [(count, rule) for rule, count in rule_counts.items()]
+    counts = [(count, rule) for rule, count in list(rule_counts.items())]
     counts = sorted(counts, reverse=True)
     for count, rule in counts:
-        print '%d\t%s' % (count, rule)
+        print('%d\t%s' % (count, rule))

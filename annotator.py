@@ -37,4 +37,4 @@ if __name__ == '__main__':
     for j in range(1, len(tokens) + 1):
         for i in range(j - 1, -1, -1):
             annotations = [a for anno in annotators for a in anno.annotate(tokens[i:j])]
-            print '(%d, %d): %s => %s' % (i, j, ' '.join(tokens[i:j]), annotations)
+            print('(%d, %d): %s => %s' % (i, j, ' '.join(tokens[i:j]), annotations))

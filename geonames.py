@@ -62,7 +62,7 @@ __version__ = "0.9"
 __maintainer__ = "Bill MacCartney"
 __email__ = "See the author's website"
 
-import urllib2
+import urllib.request, urllib.error
 import json
 import sys
 
@@ -75,14 +75,14 @@ class GeoNamesAnnotator(Annotator):
         self.live_requests = live_requests
         self.cache = {}
         if refresh_cache:
-            for k, v in self.persistent_cache.items():
+            for k, v in list(self.persistent_cache.items()):
                 if v == None:
                     self.cache[k] = v
-            print 'Kept %d of %d cache entries' % (len(self.cache), len(self.persistent_cache))
+            print('Kept %d of %d cache entries' % (len(self.cache), len(self.persistent_cache)))
         else:
             self.cache = self.persistent_cache
         self.cache_updated = False
-        print 'Loaded GeoNamesAnnotator cache with %d items' % len(self.cache)
+        print('Loaded GeoNamesAnnotator cache with %d items' % len(self.cache))
 
     def __del__(self):
         self.print_cache_if_updated()
@@ -111,34 +111,33 @@ class GeoNamesAnnotator(Annotator):
                 semantics = self.geocode(text)
                 self.cache[text] = semantics
                 self.cache_updated = True
-                print 'geocoded "%s" as %s' % (text, str(semantics))
+                print('geocoded "%s" as %s' % (text, str(semantics)))
                 if semantics != None:
                     return [('$Location', semantics)]
                 else:
                     return []
-            except KeyError, e:
+            except KeyError as e:
                 self.print_cache_if_updated()
                 raise e
         else:
-            print >>sys.stderr, \
-                'To make live geocoding requests, use GeoNamesAnnotator(live_requests=True).'
+            print('To make live geocoding requests, use GeoNamesAnnotator(live_requests=True).', file=sys.stderr)
             return []
 
     def geocode(self, text):
         try:
             request_url = self.build_request_url(text)
-            response = json.load(urllib2.urlopen(request_url))
+            f = urllib.request.urlopen(request_url)
+            response = json.loads(f.read().decode('utf-8'))
             if 'status' in response:
-                print 'GeoNames server returned status:'
-                print response['status']
+                print('GeoNames server returned status:')
+                print(response['status'])
             if len(response['geonames']):
                 return self.build_semantics(response['geonames'][0])
             else:
                 return None
-        except urllib2.URLError, e:
-            print e
-            print >>sys.stderr, \
-                'To run with cache only, use GeoNamesAnnotator(live_requests=False).'
+        except urllib.error.URLError as e:
+            print(e)
+            print('To run with cache only, use GeoNamesAnnotator(live_requests=False).', file=sys.stderr)
             sys.exit()
 
     def build_request_url(self, text):
@@ -172,21 +171,21 @@ class GeoNamesAnnotator(Annotator):
             if 'countryCode' in result and str(result['geonameId']) != result['countryId']:
                 full_name_parts.append(result['countryCode'])
             return ', '.join(full_name_parts).encode('ascii', 'ignore')
-        except KeyError, e:
-            print result
-            print e
+        except KeyError as e:
+            print(result)
+            print(e)
             raise e
 
     def print_cache_if_updated(self):
         if self.cache_updated:
-            print 'GeoNamesAnnotator cache updated (%d entries)' % len(self.cache)
+            print('GeoNamesAnnotator cache updated (%d entries)' % len(self.cache))
             # print '    persistent_cache = {'
             # for key in sorted(self.cache.keys()):
             #     escaped_key = key.replace("'", "\\'")
             #     print '        \'%s\': %s,' % (escaped_key, str(self.cache[key]))
             # print '    }'
         else:
-            print 'GeoNamesAnnotator cache not updated'
+            print('GeoNamesAnnotator cache not updated')
 
     # We have cached interpretations for phrases appearing in the 100 annotated
     # examples for the travel domain.  This avoids the need to make live calls
@@ -1677,7 +1676,7 @@ texts = [
 if __name__ == '__main__':
     annotator = GeoNamesAnnotator()
     for text in texts:
-        print
-        print '"%s"' % text
+        print()
+        print('"%s"' % text)
         result = annotator.annotate(text.split())
-        print result
+        print(result)

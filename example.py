@@ -30,4 +30,4 @@ if __name__ == '__main__':
         Example(input='utah', semantics='/state/utah', denotation=set(['/state/utah'])),
     ]
     for example in examples:
-        print example
+        print(example)

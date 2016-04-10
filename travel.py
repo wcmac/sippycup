@@ -336,27 +336,27 @@ def filter_queries_containing_locations(start=0, size=10):
     for line in f.readlines():
         match = line_pattern.match(line)
         if not match:
-            raise StandardError, 'unexpected line: %s' % line
+            raise Exception('unexpected line: %s' % line)
         query = match.group(1)
         queries.append(query)
     f.close()
-    print 'Read %d queries' % len(queries)
+    print('Read %d queries' % len(queries))
     selected_queries = queries[start:(start+size)]
-    print 'Selected %d queries' % len(selected_queries)
+    print('Selected %d queries' % len(selected_queries))
 
     domain = ContainsLocationDomain()
     grammar = domain.grammar()
     for query in selected_queries:
-        print
-        print 'Trying to parse', query
+        print()
+        print('Trying to parse', query)
         parses = parse_input(grammar, query)
         # parses = filter(lambda parse: domain.is_travel_parse(parse), parses)
         if len(parses) > 0:
-            print 'got %d parses' % len(parses)
+            print('got %d parses' % len(parses))
             for parse in parses:
-                print parse.semantics
+                print(parse.semantics)
         else:
-            print 'no parse'
+            print('no parse')
 
 
 # experiments ------------------------------------------------------------------
@@ -372,20 +372,20 @@ def overtriggering_experiment():
     for line in f.readlines():
         match = line_pattern.match(line)
         if not match:
-            raise StandardError, 'unexpected line: %s' % line
+            raise Exception('unexpected line: %s' % line)
         query = match.group(1)
         parses = parse_input(grammar, query)
-        parses = filter(lambda parse: domain.is_travel_parse(parse), parses)
+        parses = [parse for parse in parses if domain.is_travel_parse(parse)]
         if len(parses) > 0:
-            print
-            print query
+            print()
+            print(query)
             for parse in parses:
-                print parse.semantics
+                print(parse.semantics)
         queries.append(' '.join(query))
         if len(queries) % 1000 == 0:
-            print
-            print '-' * 80
-            print 'Processed %d queries' % len(queries)
+            print()
+            print('-' * 80)
+            print('Processed %d queries' % len(queries))
     f.close()
 
 

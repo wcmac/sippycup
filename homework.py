@@ -45,8 +45,8 @@ math_grammar = math_domain.grammar()
 # A few examples:
 parses = math_grammar.parse_input("minus two plus three")
 for parse in parses:
-    print '\nParse:\n', parse_to_pretty_string(parse, show_sem=True)
-    print 'Denotation:', math_domain.execute(parse.semantics)
+    print('\nParse:\n', parse_to_pretty_string(parse, show_sem=True))
+    print('Denotation:', math_domain.execute(parse.semantics))
 
 
 # This is a convenience function we'll use for seeing what the grammar
@@ -56,12 +56,12 @@ for parse in parses:
 
 def display_examples(utterances, grammar=None, domain=None):
     for utterance in utterances:        
-        print "="*70
-        print utterance
+        print("="*70)
+        print(utterance)
         parses = grammar.parse_input(utterance)
         for parse in parses:
-            print '\nParse:\n', parse_to_pretty_string(parse, show_sem=True)
-            print 'Denotation:', domain.execute(parse.semantics)
+            print('\nParse:\n', parse_to_pretty_string(parse, show_sem=True))
+            print('Denotation:', domain.execute(parse.semantics))
 
 
 # ### Question 1

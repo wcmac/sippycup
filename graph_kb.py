@@ -96,11 +96,11 @@ class GraphKB:
     def list(self):
         for rel in sorted(list(self.unaries.keys())):
             for node in sorted(list(self.unaries[rel])):
-                print "(%s %s)" % (rel, node)
+                print("(%s %s)" % (rel, node))
         for rel in sorted(list(self.binaries_fwd.keys())):
             for src in sorted(list(self.binaries_fwd[rel])):
                 for dst in sorted(list(self.binaries_fwd[rel][src])):
-                    print "(%s %s %s)" % (rel, src, dst)
+                    print("(%s %s %s)" % (rel, src, dst))
 
     def executor(self):
         return GraphKBExecutor(self)
@@ -195,9 +195,9 @@ class GraphKBExecutor:
             vals = [src for dst in arg for src in index[rel][dst]]
         elif isinstance(arg, FunctionType):
             # arg is a predicate, e.g., the result of executing ('.gt', 5044).
-            vals = [src for dst, srcs in index[rel].items() if arg(dst) for src in srcs]
+            vals = [src for dst, srcs in list(index[rel].items()) if arg(dst) for src in srcs]
         else:
-            raise StandardError, 'Unsupported argument to join: %s' % str(arg)
+            raise Exception('Unsupported argument to join: %s' % str(arg))
         return sorted_tuple(set(vals))
 
     def execute_special(self, sem):
@@ -227,7 +227,7 @@ class GraphKBExecutor:
         elif sem[0] == '.argmin':
             return self.execute_max(args, rev=True, arg=True)
         else:
-            raise StandardError, 'Unsupported operator: %s' % str(sem[0])
+            raise Exception('Unsupported operator: %s' % str(sem[0]))
 
     def execute_and(self, args):
         assert len(args) == 2
@@ -296,7 +296,7 @@ class GraphKBExecutor:
             return (ext_val,)
 
 def sorted_tuple(elements):
-    return tuple(sorted(list(elements)))
+    return tuple(sorted(list(elements), key=str))
 
 
 # demo =========================================================================
@@ -357,10 +357,10 @@ def demo():
                 denotation=('bart', 'homer', 'marge')),
         Example(input='not a child',
                 semantics=('.not', 'child'),
-                denotation=(1, 8, 10, 34, 36, 'homer', 'marge')),
+                denotation=(1, 10, 34, 36, 8, 'homer', 'marge')),
         Example(input='anything',
                 semantics=('.any',),
-                denotation=(1, 8, 10, 34, 36, 'bart', 'homer', 'lisa', 'maggie', 'marge')),
+                denotation=(1, 10, 34, 36, 8, 'bart', 'homer', 'lisa', 'maggie', 'marge')),
         Example(input='sisters',
                 semantics=('.any', 'has_sister'),
                 denotation=('lisa', 'maggie')),
@@ -401,10 +401,10 @@ def demo():
     for example in examples:
         deno = executor.execute(example.semantics)
         assert deno == example.denotation, example.input + ': ' + str(deno)
-        print
-        print '%-16s %s' % ('input', example.input)
-        print '%-16s %s' % ('semantics', example.semantics)
-        print '%-16s %s' % ('denotation', deno)
+        print()
+        print('%-16s %s' % ('input', example.input))
+        print('%-16s %s' % ('semantics', example.semantics))
+        print('%-16s %s' % ('denotation', deno))
 
 if __name__ == '__main__':
     demo()

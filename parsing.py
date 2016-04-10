@@ -20,7 +20,7 @@ __email__ = "See the author's website"
 import math
 from collections import defaultdict, Iterable
 from itertools import product
-from StringIO import StringIO
+from io import StringIO
 from types import FunctionType
 
 MAX_CELL_CAPACITY = 1000  # upper bound on number of parses in one chart cell
@@ -147,15 +147,15 @@ def parse_to_pretty_string(parse, indent=0, show_sem=False):
     def helper(parse, level, output):
         line = indent_string(level) + to_oneline_string(parse)
         if len(line) <= 100:
-            print >>output, line
+            print(line, file=output)
         elif isinstance(parse, Parse):
-            print >>output, indent_string(level) + '[' + label(parse)
+            print(indent_string(level) + '[' + label(parse), file=output)
             for child in parse.children:
                 helper(child, level + 1, output)
             # TODO: Put closing parens to end of previous line, not dangling alone.
-            print >>output, indent_string(level) + ']'
+            print(indent_string(level) + ']', file=output)
         else:
-            print >>output, indent_string(level) + parse
+            print(indent_string(level) + parse, file=output)
     output = StringIO()
     helper(parse, indent, output)
     return output.getvalue()[:-1]  # trim final newline
@@ -173,7 +173,7 @@ class Grammar:
         self.start_symbol = start_symbol
         for rule in rules:
             add_rule(self, rule)
-        print 'Created grammar with %d rules' % len(rules)
+        print('Created grammar with %d rules' % len(rules))
 
     def parse_input(self, input):
         """
@@ -195,7 +195,7 @@ def add_rule(grammar, rule):
         add_n_ary_rule(grammar, rule)
     else:
         # EXERCISE: handle this case.
-        raise StandardError, 'RHS mixes terminals and non-terminals: %s' % rule
+        raise Exception('RHS mixes terminals and non-terminals: %s' % rule)
 
 def add_rule_containing_optional(grammar, rule):
     """
@@ -334,31 +334,31 @@ def check_capacity(chart, i, j):
         max_cell_capacity_hits += 1
         lg_max_cell_capacity_hits = math.log(max_cell_capacity_hits, 2)
         if int(lg_max_cell_capacity_hits) == lg_max_cell_capacity_hits:
-            print 'Max cell capacity %d has been hit %d times' % (
-                MAX_CELL_CAPACITY, max_cell_capacity_hits)
+            print('Max cell capacity %d has been hit %d times' % (
+                MAX_CELL_CAPACITY, max_cell_capacity_hits))
         return False
     return True
 
 def print_grammar(grammar):
     def all_rules(rule_index):
-        return [rule for rules in rule_index.values() for rule in rules]
+        return [rule for rules in list(rule_index.values()) for rule in rules]
     def print_rules_sorted(rules):
         for s in sorted([str(rule) for rule in rules]):
-            print '  ' + s
-    print 'Lexical rules:'
+            print('  ' + s)
+    print('Lexical rules:')
     print_rules_sorted(all_rules(grammar.lexical_rules))
-    print 'Unary rules:'
+    print('Unary rules:')
     print_rules_sorted(all_rules(grammar.unary_rules))
-    print 'Binary rules:'
+    print('Binary rules:')
     print_rules_sorted(all_rules(grammar.binary_rules))
 
 def print_chart(chart):
     """Print the chart.  Useful for debugging."""
-    spans = sorted(chart.keys(), key=(lambda span: span[0]))
+    spans = sorted(list(chart.keys()), key=(lambda span: span[0]))
     spans = sorted(spans, key=(lambda span: span[1] - span[0]))
     for span in spans:
         if len(chart[span]) > 0:
-            print '%-12s' % str(span),
-            print chart[span][0]
+            print('%-12s' % str(span), end=' ')
+            print(chart[span][0])
             for entry in chart[span][1:]:
-                print '%-12s' % ' ', entry
+                print('%-12s' % ' ', entry)

@@ -55,7 +55,7 @@ class Domain:
         return []
 
     def grammar(self):
-        raise StandardError, 'grammar() method not implemented'
+        raise Exception('grammar() method not implemented')
 
     def features(self, parse):
         """

@@ -84,12 +84,12 @@ __email__ = "See the author's website"
 
 import re
 import sys
-import urllib
+import urllib.request
 
 valid_line = re.compile(r'^[a-z]+\((.*)\)\.$')
 
 def filter_by_prefix(prefix, lines):
-  return filter(lambda line: line.startswith(prefix), lines)
+  return [line for line in lines if line.startswith(prefix)]
 
 def strip_brackets(string):
   if string.startswith('['):
@@ -106,8 +106,8 @@ def strip_quotes(string):
 
 def extract_fields(line):
   fields = valid_line.match(line).group(1).split(',')
-  fields = map(lambda field: strip_quotes(strip_brackets(field.strip())), fields)
-  fields = filter(lambda field: field != '', fields)
+  fields = [strip_quotes(strip_brackets(field.strip())) for field in fields]
+  fields = [field for field in fields if field != '']
   return fields
 
 def make_state_id(state_name):
@@ -148,19 +148,19 @@ class GeobaseReader:
   def ensure_prolog_file(self):
     try:
       f = open(self.prolog_file, 'rU')
-    except IOError, e:
-      print >>sys.stderr, 'No local cache for Geobase Prolog file'
+    except IOError as e:
+      print('No local cache for Geobase Prolog file', file=sys.stderr)
       self.download_prolog_file()
 
   def download_prolog_file(self):
     try:
       from_url = 'ftp://ftp.cs.utexas.edu/pub/mooney/nl-ilp-data/geosystem/geobase'
-      print >>sys.stderr, 'Downloading from %s' % from_url
-      opener = urllib.URLopener()
+      print('Downloading from %s' % from_url, file=sys.stderr)
+      opener = urllib.request.URLopener()
       opener.retrieve(from_url, self.prolog_file)
-      print >>sys.stderr, 'Download successful'
-    except IOError, e:
-      print >>sys.stderr, 'Download failed!'
+      print('Download successful', file=sys.stderr)
+    except IOError as e:
+      print('Download failed!', file=sys.stderr)
       raise e
 
   def read_lines(self):
@@ -171,8 +171,8 @@ class GeobaseReader:
         if valid_line.match(line):
           lines.append(line[:-1])
       f.close()
-    except IOError, e:
-      print >>sys.stderr, 'No local cache for Geobase Prolog file'
+    except IOError as e:
+      print('No local cache for Geobase Prolog file', file=sys.stderr)
       raise e
     return lines
 
@@ -217,7 +217,7 @@ class GeobaseReader:
       self.add_binary('contains', state_id, city3_id)
       self.add_binary('contains', state_id, city4_id)
       self.add_binary('contains', '/country/usa', state_id)
-    print 'GeobaseReader read %d state rows.' % len(lines)
+    print('GeobaseReader read %d state rows.' % len(lines))
 
   def parse_city(self, lines):
     lines = filter_by_prefix('city', lines)
@@ -234,7 +234,7 @@ class GeobaseReader:
       self.add_binary('name', city_id, city_name)
       self.add_binary('contains', state_id, city_id)
       self.add_binary('population', city_id, population)
-    print 'GeobaseReader read %d city rows.' % len(lines)
+    print('GeobaseReader read %d city rows.' % len(lines))
 
   def parse_river(self, lines):
     lines = filter_by_prefix('river', lines)
@@ -251,7 +251,7 @@ class GeobaseReader:
       self.add_binary('length', river_id, length)
       for state_name in traversed_state_names:
         self.add_binary('traverses', river_id, make_state_id(state_name))
-    print 'GeobaseReader read %d river rows.' % len(lines)
+    print('GeobaseReader read %d river rows.' % len(lines))
 
   def parse_border(self, lines):
     lines = filter_by_prefix('border', lines)
@@ -265,7 +265,7 @@ class GeobaseReader:
         bordered_state_id = make_state_id(bordered_state_name)
         self.add_binary('borders', state_id, bordered_state_id)
         self.add_binary('borders', bordered_state_id, state_id)
-    print 'GeobaseReader read %d border rows.' % len(lines)
+    print('GeobaseReader read %d border rows.' % len(lines))
 
   def parse_highlow(self, lines):
     lines = filter_by_prefix('highlow', lines)
@@ -292,7 +292,7 @@ class GeobaseReader:
       self.add_binary('lowest_point', state_id, lowest_point_id)
       self.add_binary('lowest_elevation', state_id, lowest_elevation)
       self.add_binary('height', lowest_point_id, lowest_elevation)
-    print 'GeobaseReader read %d highlow rows.' % len(lines)
+    print('GeobaseReader read %d highlow rows.' % len(lines))
 
   def parse_mountain(self, lines):
     lines = filter_by_prefix('mountain', lines)
@@ -308,7 +308,7 @@ class GeobaseReader:
       self.add_binary('name', mountain_id, mountain_name)
       self.add_binary('contains', state_id, mountain_id)
       self.add_binary('height', mountain_id, height)
-    print 'GeobaseReader read %d mountain rows.' % len(lines)
+    print('GeobaseReader read %d mountain rows.' % len(lines))
 
   def parse_road(self, lines):
     lines = filter_by_prefix('road', lines)
@@ -322,7 +322,7 @@ class GeobaseReader:
       self.add_binary('name', road_id, road_name)
       for traversed_state_name in traversed_state_names:
         self.add_binary('traverses', road_id, make_state_id(traversed_state_name))
-    print 'GeobaseReader read %d road rows.' % len(lines)
+    print('GeobaseReader read %d road rows.' % len(lines))
 
   def parse_lake(self, lines):
     lines = filter_by_prefix('lake', lines)
@@ -340,7 +340,7 @@ class GeobaseReader:
       for traversed_state_name in traversed_state_names:
         # 'traverses' may sound odd here, but, logically, it's the same relation.
         self.add_binary('traverses', lake_id, make_state_id(traversed_state_name))
-    print 'GeobaseReader read %d lake rows.' % len(lines)
+    print('GeobaseReader read %d lake rows.' % len(lines))
 
   def parse_country(self, lines):
     lines = filter_by_prefix('country', lines)
@@ -356,7 +356,7 @@ class GeobaseReader:
       self.add_binary('name', country_id, country_name)
       self.add_binary('population', country_id, population)
       self.add_binary('area', country_id, area)
-    print 'GeobaseReader read %d country row.' % len(lines)
+    print('GeobaseReader read %d country row.' % len(lines))
 
   def add_unary(self, rel, elt):
     self.tuples.add((rel, elt))
@@ -375,8 +375,8 @@ class GeobaseReader:
     before_size = len(self.tuples)
     for edge in edges:
       self.tuples.add(edge)
-    print 'GeobaseReader computed transitive closure of \'%s\', adding %d edges' % (
-      rel, len(self.tuples) - before_size)
+    print('GeobaseReader computed transitive closure of \'%s\', adding %d edges' % (
+      rel, len(self.tuples) - before_size))
 
 
 if __name__ == '__main__':

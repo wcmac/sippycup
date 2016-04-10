@@ -13,13 +13,16 @@ from metrics import SemanticsAccuracyMetric, DenotationAccuracyMetric
 from scoring import Model
 
 def latent_sgd(model=None, examples=[], training_metric=None, T=10, eta=0.1, seed=None):
+    # Used for sorting scored parses.
+    def scored_parse_key_fn(scored_parse):
+        return (scored_parse[0], str(scored_parse[1]))
     if T <= 0:
         return model
-    print '=' * 80
-    print 'Running SGD learning on %d examples with training metric: %s\n' % (
-        len(examples), training_metric.name())
+    print('=' * 80)
+    print('Running SGD learning on %d examples with training metric: %s\n' % (
+        len(examples), training_metric.name()))
     if seed:
-        print 'random.seed(%d)' % seed
+        print('random.seed(%d)' % seed)
         random.seed(seed)
     model = clone_model(model)
     for t in range(T):
@@ -35,13 +38,13 @@ def latent_sgd(model=None, examples=[], training_metric=None, T=10, eta=0.1, see
                 # Get all (score, parse) pairs.
                 scores = [(p.score + cost(target_parse, p), p) for p in parses]
                 # Get the maximal score.
-                max_score = sorted(scores)[-1][0]
+                max_score = sorted(scores, key=scored_parse_key_fn)[-1][0]
                 # Get all the candidates with the max score and choose one randomly.
                 predicted_parse = random.choice([p for s, p in scores if s == max_score])
                 if training_metric.evaluate(example, [predicted_parse]):
                     num_correct += 1
                 update_weights(model, target_parse, predicted_parse, eta)
-        print 'SGD iteration %d: train accuracy: %.3f' % (t, 1.0 * num_correct / len(examples))
+        print('SGD iteration %d: train accuracy: %.3f' % (t, 1.0 * num_correct / len(examples)))
     print_weights(model.weights)
     return model
 
@@ -57,7 +60,7 @@ def clone_model(model):
 def update_weights(model, target_parse, predicted_parse, eta):
     target_features = model.feature_fn(target_parse)
     predicted_features = model.feature_fn(predicted_parse)
-    for f in set(target_features.keys() + predicted_features.keys()):
+    for f in set(list(target_features.keys()) + list(predicted_features.keys())):
         update = target_features[f] - predicted_features[f]
         if update != 0.0:
             # print 'update %g + %g * %g = %g\t%s' % (
@@ -65,28 +68,28 @@ def update_weights(model, target_parse, predicted_parse, eta):
             model.weights[f] += eta * update
 
 def print_weights(weights, n=20):
-    pairs = [(value, key) for key, value in weights.items() if value != 0]
+    pairs = [(value, str(key)) for key, value in list(weights.items()) if value != 0]
     pairs = sorted(pairs, reverse=True)
-    print
+    print()
     if len(pairs) < n * 2:
-        print 'Feature weights:'
+        print('Feature weights:')
         for value, key in pairs:
-            print '%8.1f\t%s' % (value, key)
+            print('%8.1f\t%s' % (value, key))
     else:
-        print 'Top %d and bottom %d feature weights:' % (n, n)
+        print('Top %d and bottom %d feature weights:' % (n, n))
         for value, key in pairs[:n]:
-            print '%8.1f\t%s' % (value, key)
-        print '%8s\t%s' % ('...', '...')
+            print('%8.1f\t%s' % (value, key))
+        print('%8s\t%s' % ('...', '...'))
         for value, key in pairs[-n:]:
-            print '%8.1f\t%s' % (value, key)
-    print
+            print('%8.1f\t%s' % (value, key))
+    print()
 
 
 # demo =========================================================================
 
 def demo_learning_from_semantics(domain):
     from example import Example
-    print '\nDemo of learning from semantics'
+    print('\nDemo of learning from semantics')
     # Strip denotations, just to prove that we're learning from semantics.
     def strip_denotation(example):
         return Example(input=example.input, semantics=example.semantics)
@@ -96,7 +99,7 @@ def demo_learning_from_semantics(domain):
 
 def demo_learning_from_denotations(domain):
     from example import Example
-    print '\nDemo of learning from denotations'
+    print('\nDemo of learning from denotations')
     # Strip semantics, just to prove that we're learning from denotations.
     def strip_semantics(example):
         return Example(input=example.input, denotation=example.denotation)

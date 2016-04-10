@@ -29,7 +29,7 @@ def rule_features(parse):
 def score(parse=None, feature_fn=None, weights=None):
     """Returns the inner product of feature_fn(parse) and weights."""
     assert parse and feature_fn and weights != None
-    return sum(weights[feature] * value for feature, value in feature_fn(parse).items())
+    return sum(weights[feature] * value for feature, value in list(feature_fn(parse).items()))
 
 class Model:
     def __init__(self,

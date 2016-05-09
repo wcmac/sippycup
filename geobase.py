@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 """
 Defines GeobaseReader, which reads geobase (a geography database from Ray
 Mooney's group at UT Austin) from a Prolog file and parses it into a set of
@@ -84,7 +86,7 @@ __email__ = "See the author's website"
 
 import re
 import sys
-import urllib.request
+from six.moves import urllib
 
 valid_line = re.compile(r'^[a-z]+\((.*)\)\.$')
 
@@ -156,7 +158,7 @@ class GeobaseReader:
     try:
       from_url = 'ftp://ftp.cs.utexas.edu/pub/mooney/nl-ilp-data/geosystem/geobase'
       print('Downloading from %s' % from_url, file=sys.stderr)
-      opener = urllib.request.URLopener()
+      opener = request.URLopener()
       opener.retrieve(from_url, self.prolog_file)
       print('Download successful', file=sys.stderr)
     except IOError as e:

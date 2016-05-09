@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 """
 An Annotator which wraps the GeoNames API (geonames.org) to recognize names
 of locations and generate semantic representations for them.  For example,
@@ -62,7 +64,7 @@ __version__ = "0.9"
 __maintainer__ = "Bill MacCartney"
 __email__ = "See the author's website"
 
-import urllib.request, urllib.error
+from six.moves import urllib
 import json
 import sys
 

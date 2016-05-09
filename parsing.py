@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 """
 Implementation of core parsing functionality, including the Rule, Parse, and
 Grammar classes.
@@ -17,11 +19,10 @@ __version__ = "0.9"
 __maintainer__ = "Bill MacCartney"
 __email__ = "See the author's website"
 
-from __future__ import print_function
 import math
 from collections import defaultdict, Iterable
 from itertools import product
-from StringIO import StringIO
+from six import StringIO
 from types import FunctionType
 
 MAX_CELL_CAPACITY = 1000  # upper bound on number of parses in one chart cell

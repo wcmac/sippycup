@@ -279,12 +279,12 @@ def interact(domain, example_input=None, T=10):
     print('\nHello! Enter a query%s:' % (', such as "%s"' % example_input if example_input else ''))
     while True:
         try:
-            input = input('>>> ')
+            query = input('>>> ')
         except EOFError:
             print('\nBye!')
             return
-        example = Example(input=input)
-        parses = model.parse_input(input)
+        example = Example(input=query)
+        parses = model.parse_input(query)
         if parses:
             print_parses(example, parses)
         else:

@@ -158,7 +158,7 @@ class GeobaseReader:
     try:
       from_url = 'ftp://ftp.cs.utexas.edu/pub/mooney/nl-ilp-data/geosystem/geobase'
       print('Downloading from %s' % from_url, file=sys.stderr)
-      opener = request.URLopener()
+      opener = urllib.request.URLopener()
       opener.retrieve(from_url, self.prolog_file)
       print('Download successful', file=sys.stderr)
     except IOError as e:

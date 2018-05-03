@@ -9,7 +9,7 @@
 
 # # [CS224U](https://web.stanford.edu/class/cs224u/) Homework 5
 # 
-# This homework is distributed in three content-identical formats (html, py, ipynb) as part of the SippyCup codebase. All seven problems are required. You're encouraged to turn your work in as iPython HTML output or as a Python script. This work is due by the start of class on May 16.
+# This homework is distributed in three content-identical formats (html, py, ipynb) as part of the SippyCup codebase. All seven problems are required. You're encouraged to turn your work in as iPython HTML output or as a Python script. This work is due by 11:59pm on May 21.
 # 
 # Be sure to put this code, or run this notebook, inside [the SippyCup codebase](https://github.com/wcmac/sippycup).
 # 

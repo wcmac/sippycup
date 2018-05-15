@@ -88,7 +88,7 @@ def latent_sgd(
                 error += max_score - target_parse.score
                 # Get all the candidates with the max score and choose one randomly.
                 predicted_parse = random.choice([p for s, p in scores if s == max_score])
-                if training_metric.evaluate(example, [predicted_parse]):
+                if training_metric.evaluate(example, parses):
                     num_correct += 1
                 ada_update_mag, adagrad = update_weights(
                     model,

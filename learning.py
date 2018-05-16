@@ -155,10 +155,10 @@ def print_weights(weights, n=20):
     else:
         print('Top %d and bottom %d feature weights:' % (n, n))
         for value, key in pairs[:n]:
-            print('%8.1f\t%s' % (value, key))
+            print('%8.2f\t%s' % (value, key))
         print('%8s\t%s' % ('...', '...'))
         for value, key in pairs[-n:]:
-            print('%8.1f\t%s' % (value, key))
+            print('%8.2f\t%s' % (value, key))
     print()
 
 

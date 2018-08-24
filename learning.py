@@ -9,6 +9,7 @@ __email__ = "See the author's website"
 import math
 import random
 from collections import defaultdict, Counter
+import warnings
 
 from metrics import SemanticsAccuracyMetric, DenotationAccuracyMetric
 from scoring import Model, score
@@ -39,7 +40,7 @@ def latent_sgd(
         Use to fix the randomization in how examples are shuffled and
         ties are decided.
     loss : str
-        Either 'hinge' or 'log'.
+        Currently only 'hinge' is supported.
     l2_penalty : float
         L2 penalty constant to apply to each weight. If 0.0, then
         no penalty is imposed. Larger weights correspond to a stronger
@@ -58,6 +59,8 @@ def latent_sgd(
         return (scored_parse[0], str(scored_parse[1]))
     if T <= 0:
         return model
+    if loss != 'hinge':
+        warnings.warn("Only `loss='hinge'` is currently supported")
     print('=' * 80)
     print('Running SGD learning on %d examples with training metric: %s\n' % (
         len(examples), training_metric.name()))
@@ -66,8 +69,6 @@ def latent_sgd(
         random.seed(seed)
     model = clone_model(model)
     adagrad = defaultdict(float)
-    # No margin cost for log-loss objective:
-    costfunc = cost if loss == 'hinge' else (lambda x, y : 0.0)
     for t in range(T):
         random.shuffle(examples)
         num_correct = 0
@@ -81,7 +82,7 @@ def latent_sgd(
             if good_parses:
                 target_parse = good_parses[0]
                 # Get all (score, parse) pairs.
-                scores = [(p.score + costfunc(target_parse, p), p) for p in parses]
+                scores = [(p.score + cost(target_parse, p), p) for p in parses]
                 # Get the maximal score.
                 max_score = sorted(scores, key=scored_parse_key_fn)[-1][0]
                 # Error:
@@ -96,7 +97,7 @@ def latent_sgd(
                     predicted_parse,
                     eta,
                     l2_penalty,
-                    loss, adagrad,
+                    adagrad,
                     ada_update_mag)
         acc = 1.0 * num_correct / len(examples)
         print(
@@ -118,18 +119,14 @@ def clone_model(model):
                  weights=defaultdict(float),  # Zero the weights.
                  executor=model.executor)
 
-def update_weights(model, target_parse, predicted_parse, eta, l2_penalty, loss, adagrad, ada_update_mag):
+def update_weights(model, target_parse, predicted_parse, eta, l2_penalty, adagrad, ada_update_mag):
     target_features = model.feature_fn(target_parse)
     predicted_features = model.feature_fn(predicted_parse)
     all_f = set(target_features.keys()) | set(predicted_features.keys())
     # Gradient:
     grad = defaultdict(float)
-    if loss == 'hinge':
-        for f in all_f:
-            grad[f] = target_features[f] - predicted_features[f]
-    else: # This is the log-loss:
-        grad = Counter(target_features)
-        grad.subtract(predicted_features)
+    for f in all_f:
+        grad[f] = target_features[f] - predicted_features[f]
     # L2 penalty:
     for f, w in model.weights.items():
         grad[f] -= l2_penalty * w
